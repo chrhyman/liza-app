@@ -1,0 +1,28 @@
+/* Global CSS entrypoint
+
+Most CSS values are set via Material UI as a provider. CssBaseline provides the cross-platform baseline.
+
+This is where new fonts can be defined.
+
+*/
+
+/* Example font definition (font files should also be imported in main.tsx
+
+ @font-face {
+  font-family: 'MyFont';
+  src: 
+    local('MyFont-Regular'),
+    url('./fonts/MyFont/MyFont-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'MyFont';
+  src:
+    local('MyFont-BoldItalic'),
+    url('./fonts/MyFont/MyFont-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+*/
