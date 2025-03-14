@@ -2,12 +2,13 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { LoginRequest } from '@/types/login-request.interface'
 import { login } from '@/features/auth/auth-slice'
-import { selectAuthState } from '@/features/auth/auth-selector'
+import { selectAuthState, selectUser } from '@/features/auth/auth-selector'
 import LoginForm from './login-form'
 
 const LoginPage = () => {
   const dispatch = useAppDispatch()
-  const { token, loading, error } = useAppSelector(selectAuthState)
+  const { loading, error } = useAppSelector(selectAuthState)
+  const activeUser = useAppSelector(selectUser)
 
   const handleLogin = (credentials: LoginRequest) => {
     dispatch(login(credentials))
@@ -37,11 +38,12 @@ const LoginPage = () => {
       >
         <Typography variant="h3">Login</Typography>
         {error && <Typography color="error">{error}</Typography>}
-        <LoginForm onLogin={handleLogin} />
+
+        {!loading && !activeUser && <LoginForm onLogin={handleLogin} />}
 
         {loading && <CircularProgress />}
 
-        {token && (
+        {activeUser && (
           <Typography
             color="success"
             sx={{
@@ -51,7 +53,7 @@ const LoginPage = () => {
               textAlign: 'center',
             }}
           >
-            Your token is {token}
+            You&apos;re logged in! Your username is {activeUser.username}.
           </Typography>
         )}
       </Box>

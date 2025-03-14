@@ -1,27 +1,32 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { loginUser } from '@/api'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getAuthenticatedUser, loginUser } from '@/api'
 import { LoginRequest } from '@/types/login-request.interface'
-import { LoginResponse } from '@/types/login-response.interface'
+import { UserDto } from '@/types/user'
 
 export interface AuthState {
   token: string | null
   loading: boolean
   error: string | null
+  activeUser: UserDto | null
 }
 
 const initialState: AuthState = {
   token: null,
   loading: false,
   error: null,
+  activeUser: null,
 }
 
 export const login = createAsyncThunk<
-  LoginResponse,
+  UserDto,
   LoginRequest,
   { rejectValue: string }
->('auth/login', async (credentials, { rejectWithValue }) => {
+>('auth/login', async (credentials, { rejectWithValue, dispatch }) => {
   try {
-    return await loginUser(credentials)
+    const response = await loginUser(credentials)
+    dispatch(setToken(response.token))
+    const userResponse = await getAuthenticatedUser()
+    return userResponse
   } catch (error) {
     // if api.ts receives an ErrorResponse from the API, it throws an Error with that message
     if (error instanceof Error) {
@@ -35,8 +40,15 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload
+    },
+    setActiveUser: (state, action: PayloadAction<UserDto>) => {
+      state.activeUser = action.payload
+    },
     logout: (state) => {
       state.token = null
+      state.activeUser = null
     },
   },
   extraReducers: (builder) => {
@@ -47,16 +59,25 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false
-        state.token = action.payload.token
+        const userDto: UserDto = {
+          id: action.payload.id,
+          username: action.payload.username,
+          email: action.payload.email,
+          role: action.payload.role,
+          createdAt: action.payload.createdAt,
+          updatedAt: action.payload.updatedAt,
+        }
+        state.activeUser = userDto
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false
         state.token = null
+        state.activeUser = null
         state.error = action.payload ?? 'Login failed due to unknown error'
       })
   },
 })
 
-export const { logout } = authSlice.actions
+export const { setToken, setActiveUser, logout } = authSlice.actions
 export const authReducerPath = authSlice.reducerPath
 export default authSlice.reducer

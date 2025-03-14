@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material'
+import { createTheme, useTheme } from '@mui/material'
 import { colorMap } from '@/util/color-map'
 
 /**
@@ -17,5 +17,17 @@ export const getTheme = (mode: 'light' | 'dark') => {
         main: colorMap.rusticPink,
       },
     },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            transition:
+              'background-color 0.5s ease-in-out, color 0.5s ease-in-out',
+          },
+        },
+      },
+    },
   })
 }
+
+export const useAppTheme = useTheme

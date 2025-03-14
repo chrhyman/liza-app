@@ -13,6 +13,8 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onLogin({ email, password })
+    // clear the form password
+    setPassword('')
   }
 
   return (

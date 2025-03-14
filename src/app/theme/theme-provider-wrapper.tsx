@@ -1,6 +1,6 @@
 import { ReactNode, useMemo, useState } from 'react'
 import { ThemeProvider } from '@emotion/react'
-import { CssBaseline } from '@mui/material'
+import { CssBaseline, GlobalStyles } from '@mui/material'
 import { ThemeContext } from './theme-context'
 import { getTheme } from './theme'
 
@@ -17,6 +17,14 @@ export const ThemeProviderWrapper = ({ children }: { children: ReactNode }) => {
     <ThemeContext.Provider value={{ toggleTheme, mode }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <GlobalStyles
+          styles={{
+            body: {
+              transition:
+                'background-color 0.5s ease-in-out, color 0.5s ease-in-out',
+            },
+          }}
+        />
         {children}
       </ThemeProvider>
     </ThemeContext.Provider>
