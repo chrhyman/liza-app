@@ -1,38 +1,30 @@
 import axios, { AxiosError } from 'axios'
-import { store } from '@/store'
 import { UserDto } from '@/types/user'
-import { LoginResponse } from '@/types/login-response.interface'
 import { LoginRequest } from '@/types/login-request.interface'
-import { ErrorResponse } from '@/types/error-response.interface'
+import { StatusResponse } from '@/types/status-response.interface'
 
 const API_URL = import.meta.env.VITE_API_URL
 
+const UNKNOWN_ERROR = 'An unknown error occurred.'
+
 const api = axios.create({ baseURL: API_URL, withCredentials: true })
 
-api.interceptors.request.use((config) => {
-  const token = store.getState().auth.token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
-
 export const loginUser = async ({
-  email,
+  identifier,
   password,
-}: LoginRequest): Promise<LoginResponse> => {
+}: LoginRequest): Promise<UserDto> => {
   try {
-    const { data } = await api.post<LoginResponse>('/auth/login', {
-      email,
+    const { data } = await api.post<UserDto>('/auth/login', {
+      identifier,
       password,
     })
     return data
   } catch (error) {
-    // API errors take the form of ErrorResponse (in Java, ResponseEntity<ErrorResponseDto>)
-    const axiosError = error as AxiosError<ErrorResponse>
+    // API errors take the form of StatusResponse (in Java, ResponseEntity<StatusResponseDto>)
+    const axiosError = error as AxiosError<StatusResponse>
     const apiErrorMessage = axiosError.response?.data?.message
 
-    throw new Error(apiErrorMessage ?? 'An unknown error occurred.')
+    throw new Error(apiErrorMessage ?? UNKNOWN_ERROR)
   }
 }
 
@@ -41,9 +33,21 @@ export const getAuthenticatedUser = async (): Promise<UserDto> => {
     const { data } = await api.get<UserDto>('/users/me')
     return data
   } catch (error) {
-    const axiosError = error as AxiosError<ErrorResponse>
+    const axiosError = error as AxiosError<StatusResponse>
     const apiErrorMessage = axiosError.response?.data?.message
 
-    throw new Error(apiErrorMessage ?? 'An unknown error occurred.')
+    throw new Error(apiErrorMessage ?? UNKNOWN_ERROR)
+  }
+}
+
+export const logoutUser = async (): Promise<StatusResponse> => {
+  try {
+    const { data } = await api.post<StatusResponse>('/auth/logout')
+    return data
+  } catch (error) {
+    const axiosError = error as AxiosError<StatusResponse>
+    const apiErrorMessage = axiosError.response?.data?.message
+
+    throw new Error(apiErrorMessage ?? UNKNOWN_ERROR)
   }
 }

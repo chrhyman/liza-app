@@ -1,7 +1,7 @@
-import { Box, CircularProgress, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { LoginRequest } from '@/types/login-request.interface'
-import { login } from '@/features/auth/auth-slice'
+import { login, logout } from '@/features/auth/auth-slice'
 import { selectAuthState, selectUser } from '@/features/auth/auth-selector'
 import LoginForm from './login-form'
 
@@ -15,6 +15,14 @@ const LoginPage = () => {
       .unwrap()
       .catch((error) => {
         console.error('Login failed: ', error)
+      })
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+      .unwrap()
+      .catch((error) => {
+        console.error('Logout failed: ', error)
       })
   }
 
@@ -39,22 +47,26 @@ const LoginPage = () => {
         <Typography variant="h3">Login</Typography>
         {error && <Typography color="error">{error}</Typography>}
 
-        {!loading && !activeUser && <LoginForm onLogin={handleLogin} />}
-
-        {loading && <CircularProgress />}
+        {!activeUser && <LoginForm onLogin={handleLogin} loading={loading} />}
 
         {activeUser && (
-          <Typography
-            color="success"
-            sx={{
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word',
-              maxWidth: '100%',
-              textAlign: 'center',
-            }}
-          >
-            You&apos;re logged in! Your username is {activeUser.username}.
-          </Typography>
+          <>
+            <Typography
+              color="success"
+              display="block"
+              sx={{
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                maxWidth: '100%',
+                textAlign: 'center',
+              }}
+            >
+              You&apos;re logged in! Your username is {activeUser.username}.
+            </Typography>
+            <Button variant="outlined" color="secondary" onClick={handleLogout}>
+              Log out
+            </Button>
+          </>
         )}
       </Box>
     </Box>
