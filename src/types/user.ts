@@ -7,6 +7,7 @@ export interface UserDto {
   id: string // UUID
   username: string
   email: string
+  enabled: boolean
   role: string // UserRole
   createdAt: string // timestamp
   updatedAt: string // timestamp
@@ -25,6 +26,7 @@ export class User {
         UUID.fromString(json.id),
         json.username,
         json.email,
+        json.enabled,
         UserRole[json.role as keyof typeof UserRole],
         fromISO(json.createdAt),
         fromISO(json.updatedAt)
@@ -36,6 +38,7 @@ export class User {
         id: user.id.toString(),
         username: user.username,
         email: user.email,
+        enabled: user.enabled,
         role: user.role,
         createdAt: toISO(user.createdAt),
         updatedAt: toISO(user.updatedAt),
@@ -48,6 +51,7 @@ export class User {
     readonly id: UUID,
     readonly username: string,
     readonly email: string,
+    readonly enabled: boolean,
     readonly role: UserRole,
     readonly createdAt: DateTime,
     readonly updatedAt: DateTime
