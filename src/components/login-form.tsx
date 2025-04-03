@@ -22,7 +22,7 @@ const LoginForm = ({ onLogin, loading }: LoginFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onLogin({ identifier, password })
-    // clear the form password
+    // clear the form password on submission
     setPassword('')
   }
 

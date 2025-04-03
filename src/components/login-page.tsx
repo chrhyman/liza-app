@@ -4,27 +4,19 @@ import { LoginRequest } from '@/types/login-request.interface'
 import { login, logout } from '@/features/auth/auth-slice'
 import { selectAuthState, selectUser } from '@/features/auth/auth-selector'
 import LoginForm from './login-form'
+import { useCallback } from 'react'
 
 const LoginPage = () => {
   const dispatch = useAppDispatch()
   const { loading, error } = useAppSelector(selectAuthState)
   const activeUser = useAppSelector(selectUser)
 
-  const handleLogin = (credentials: LoginRequest) => {
-    dispatch(login(credentials))
-      .unwrap()
-      .catch((error) => {
-        console.error('Login failed: ', error)
-      })
-  }
+  const handleLogin = useCallback(
+    (credentials: LoginRequest) => void dispatch(login(credentials)),
+    [dispatch]
+  )
 
-  const handleLogout = () => {
-    dispatch(logout())
-      .unwrap()
-      .catch((error) => {
-        console.error('Logout failed: ', error)
-      })
-  }
+  const handleLogout = useCallback(() => void dispatch(logout()), [dispatch])
 
   return (
     <Box

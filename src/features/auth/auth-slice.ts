@@ -16,6 +16,8 @@ const initialState: AuthState = {
   activeUser: null,
 }
 
+const UNKNOWN_ERROR = 'An unknown error occurred.'
+
 export const login = createAsyncThunk<
   UserDto,
   LoginRequest,
@@ -28,7 +30,7 @@ export const login = createAsyncThunk<
     if (error instanceof Error) {
       return rejectWithValue(error.message)
     }
-    return rejectWithValue('An unknown error occurred.')
+    return rejectWithValue(UNKNOWN_ERROR)
   }
 })
 
@@ -43,7 +45,7 @@ export const checkAuth = createAsyncThunk<
     if (error instanceof Error) {
       return rejectWithValue(error.message)
     }
-    return rejectWithValue('An unknown error occurred.')
+    return rejectWithValue(UNKNOWN_ERROR)
   }
 })
 
@@ -58,7 +60,7 @@ export const logout = createAsyncThunk<
     if (error instanceof Error) {
       return rejectWithValue(error.message)
     }
-    return rejectWithValue('An unknown error occurred.')
+    return rejectWithValue(UNKNOWN_ERROR)
   }
 })
 
@@ -97,12 +99,12 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false
         state.activeUser = null
-        state.error = action.payload ?? 'Login failed due to unknown error'
+        state.error = action.payload ?? UNKNOWN_ERROR
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.loading = false
         state.activeUser = null
-        state.error = action.payload ?? 'Login failed due to unknown error'
+        state.error = action.payload ?? UNKNOWN_ERROR
       })
   },
 })
