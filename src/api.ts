@@ -3,6 +3,7 @@ import { UserDto } from '@/types/user'
 import { LoginRequest } from '@/types/login-request.interface'
 import { StatusResponse } from '@/types/status-response.interface'
 import { ErrorResponse } from './types/error-response.interface'
+import { RegisterRequest } from './types/register-request.interface'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -32,6 +33,43 @@ export const loginUser = async ({
       identifier,
       password,
     })
+    return data
+  } catch (e) {
+    throw new Error(processError(e))
+  }
+}
+
+export const registerUser = async ({
+  username,
+  email,
+  password,
+}: RegisterRequest): Promise<UserDto> => {
+  try {
+    const { data } = await api.post<UserDto>('/auth/register', {
+      username,
+      email,
+      password,
+    })
+    return data
+  } catch (e) {
+    throw new Error(processError(e))
+  }
+}
+
+export const checkUsernameExists = async (user: string): Promise<boolean> => {
+  try {
+    const path = `/users/exists/username/${user}`
+    const { data } = await api.get<boolean>(path)
+    return data
+  } catch (e) {
+    throw new Error(processError(e))
+  }
+}
+
+export const checkEmailExists = async (email: string): Promise<boolean> => {
+  try {
+    const path = `/users/exists/email/${email}`
+    const { data } = await api.get<boolean>(path)
     return data
   } catch (e) {
     throw new Error(processError(e))

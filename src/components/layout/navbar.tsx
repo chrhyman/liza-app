@@ -1,5 +1,4 @@
-import { useAppTheme } from '@/app/theme/theme-context'
-import { selectUser } from '@/features/auth/auth-selector'
+import { useState } from 'react'
 import { useAppSelector } from '@/store'
 import {
   AccountCircle,
@@ -27,7 +26,8 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { useState } from 'react'
+import { useAppTheme } from '@/app/theme/theme-context'
+import { selectUser } from '@/features/auth/auth-selector'
 
 const Navbar = () => {
   const { toggleTheme, mode } = useAppTheme()

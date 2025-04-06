@@ -1,18 +1,29 @@
-import { Box, Button, Typography } from '@mui/material'
+import { useCallback } from 'react'
+import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { LoginRequest } from '@/types/login-request.interface'
-import { login, logout } from '@/features/auth/auth-slice'
+import { RegisterRequest } from '@/types/register-request.interface'
+import { login, logout, register } from '@/features/auth/auth-slice'
 import { selectAuthState, selectUser } from '@/features/auth/auth-selector'
 import LoginForm from './login-form'
-import { useCallback } from 'react'
+import RegisterForm from './register-form'
 
 const LoginPage = () => {
   const dispatch = useAppDispatch()
   const { loading, error } = useAppSelector(selectAuthState)
-  const activeUser = useAppSelector(selectUser)
+  const user = useAppSelector(selectUser)
+
+  const theme = useTheme()
+  const belowMediumWidth = useMediaQuery(theme.breakpoints.down('md'))
 
   const handleLogin = useCallback(
     (credentials: LoginRequest) => void dispatch(login(credentials)),
+    [dispatch]
+  )
+
+  const handleRegister = useCallback(
+    (registerRequest: RegisterRequest) =>
+      void dispatch(register(registerRequest)),
     [dispatch]
   )
 
@@ -24,7 +35,6 @@ const LoginPage = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100hv',
       }}
     >
       <Box
@@ -36,12 +46,32 @@ const LoginPage = () => {
           gap: 2,
         }}
       >
-        <Typography variant="h3">Login</Typography>
+        {!user && (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 10,
+              alignItems: 'center',
+              flexDirection: belowMediumWidth ? 'column' : 'row',
+            }}
+          >
+            <LoginForm onLogin={handleLogin} loading={loading} />
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                border: '2px solid',
+                borderColor: 'secondary.main',
+              }}
+            />
+            <RegisterForm onRegister={handleRegister} loading={loading} />
+          </Box>
+        )}
+
         {error && <Typography color="error">{error}</Typography>}
 
-        {!activeUser && <LoginForm onLogin={handleLogin} loading={loading} />}
-
-        {activeUser && (
+        {user && (
           <>
             <Typography
               color="success"
@@ -53,7 +83,7 @@ const LoginPage = () => {
                 textAlign: 'center',
               }}
             >
-              You&apos;re logged in! Your username is {activeUser.username}.
+              You&apos;re logged in! Your username is {user.username}.
             </Typography>
             <Button variant="outlined" color="secondary" onClick={handleLogout}>
               Log out
